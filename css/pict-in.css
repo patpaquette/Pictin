@@ -1,0 +1,486 @@
+@charset "utf-8";
+/* CSS Document */
+
+body{
+	font-family:Tahoma, Geneva, sans-serif;
+	font-size:12px;
+}
+button
+{
+	padding:1px 6px;
+}
+#toolbar
+{
+	width:100%;
+	margin:0;
+}
+.pictin-toolbar-icon
+{
+	background-image:url(../img/iconset.png);
+	background-repeat:no-repeat;
+	width:32px;
+	height:32px;
+}
+.pictin-toolbar-icon-areaselect
+{
+	background-position: 0;
+}
+.pictin-toolbar-icon-calibrate
+{
+	background-position: -32px;
+}
+.pictin-toolbar-icon-contrastbrightness
+{
+	background-position: -64px;
+}
+.pictin-toolbar-icon-drawangle
+{
+	background-position: -96px;
+}
+.pictin-toolbar-icon-drawarrow
+{
+	background-position: -128px;
+}
+.pictin-toolbar-icon-drawcircle
+{
+	background-position: -160px;
+}
+.pictin-toolbar-icon-drawdot
+{
+	background-position: -192px;
+}
+.pictin-toolbar-icon-drawline
+{
+	background-position: -224px;
+}
+.pictin-toolbar-icon-drawlinesegment
+{
+	background-position: -256px;
+}
+.pictin-toolbar-icon-drawrectangle
+{
+	background-position: -288px;
+}
+.pictin-toolbar-icon-drawtext
+{
+	background-position: -320px;
+}
+.pictin-toolbar-icon-filemanager
+{
+	background-position: -352px;
+}
+.pictin-toolbar-icon-linethickness1px
+{
+	background-position: -384px;
+}
+.pictin-toolbar-icon-linethickness2px
+{
+	background-position: -416px;
+}
+.pictin-toolbar-icon-linethickness4px
+{
+	background-position: -448px;
+}
+.pictin-toolbar-icon-linethicknessselect
+{
+	background-position: -384px;
+}
+.pictin-toolbar-icon-measure
+{
+	background-position: -512px;
+}
+.pictin-toolbar-icon-redo
+{
+	background-position: -544px;
+}
+.pictin-toolbar-icon-rotate180
+{
+	background-position: -576px;
+}
+.pictin-toolbar-icon-rotateclockwise90
+{
+	background-position: -608px;
+}
+.pictin-toolbar-icon-rotatecounterclockwise90
+{
+	background-position: -640px;
+}
+.pictin-toolbar-icon-save
+{
+	background-position: -672px;
+}
+.pictin-toolbar-icon-saveas
+{
+	background-position: -704px;
+}
+.pictin-toolbar-icon-select
+{
+	background-position: -736px;
+}
+.pictin-toolbar-icon-undo
+{
+	background-position: -768px;
+}
+.pictin-toolbar-icon-zoomin
+{
+	background-position: -800px;
+}
+.pictin-toolbar-icon-zoomout
+{
+	background-position: -832px;
+}
+.pictin-toolbar-icon-zoomreset
+{
+	background-position: -864px;
+}
+.pictin-toolbar-icon-colorpicker
+{
+	background-position: -896px;
+}
+.pictin-toolbar-icon-update
+{
+	background-position: -1056px;
+	width:47px !important;
+}
+.pictin-toolbar-icon-drawreflex
+{
+	background-position: -960px;
+}
+.pictin-toolbar-icon-import
+{
+	background-position: -992px;
+}
+.pictin-toolbar-icon-drawellipse
+{
+	background-position: -1024px;
+}
+.pictin-toolbar-icon-horizontal_symetry
+{
+	background-position: -1103px
+}
+.pictin-toolbar-icon-delete
+{
+	background-position: -1135px
+}
+.pictin-toolbar-icon-automatic_programs
+{
+	background-position: -1167px
+}
+#pictin-colorpicker-holder, #pictin-filemanager-holder
+{
+	display:none;
+	padding:0;
+}
+
+#pictin-colorpicker, #pictin-filemanager
+{
+	margin:0;
+}
+.ui-widget{
+	font-size:11px !important;
+}
+
+#canvas
+{
+	position:relative;
+	margin-top:5px;
+	padding:0;
+}
+#surface
+{
+	position:absolute;
+	border:1px solid black;
+	padding:0;
+	margin:0;
+	z-index:10;
+	overflow:hidden;
+}
+#background
+{
+	position:absolute;
+	padding:0;
+	margin:1px;
+}
+#zoomed-area-canvas
+{
+	position: absolute;
+	padding:0;
+	margin:1px;
+}
+#zoomed-area-surface
+{
+	position: absolute;
+	border:1px solid black;
+	padding:0;
+	margin:0;
+	z-index:10;
+	overflow:hidden;
+}
+
+#pictin-contrabright-holder
+{
+	display:none;
+	padding:3px;
+}
+#pictin-contrabright
+{
+	width:560px;
+	height:180px;
+	position:relative;
+}
+#pictin-contrabright-preview
+{
+	border:1px solid #bfc4ce;
+	background-color:#ebecef;
+	width:180px;
+	height:180px;
+}
+#pictin-contrabright-preview canvas
+{
+
+}
+#pictin-contrabright-controls
+{
+	width:355px;
+	height:180px;
+	position:absolute;
+	top:0;
+	right:0;
+	border:1px solid #bfc4ce;
+	background-color:#ebecef;
+}
+#pictin-contrast-control, #pictin-brightness-control
+{
+	width:100%;
+	height:35%;
+}
+#pictin-contrast-control > div, #pictin-brightness-control > div, #pictin-contrabright-buttons
+{
+	margin:5px;
+	position:relative;
+}
+#pictin-contrast-label, #pictin-brightness-label
+{
+	font-weight:bold;
+	color:#444;
+}
+#pictin-contrast-slider, #pictin-brightness-slider
+{
+	width:301px;
+	margin:5px 0;
+	clear:none;
+	float:left;
+}
+#pictin-contrabright input[type=text]
+{
+	border:1px solid #bfc4ce;
+	margin:5px 0;
+	float:right;
+	width:35px;
+	text-align:right;
+}
+#pictin-contrabright-buttons
+{
+	text-align:right;
+}
+#pictin-contrabright-buttons button
+{
+	margin-left:15px;
+}
+#pictin-drawtext-holder
+{
+	display:none;
+	height:300px;
+	width:350px;
+	padding:3px;
+	overflow:hidden;
+}
+#pictin-drawtext
+{
+	width:350px;
+}
+#pictin-drawtext-value
+{
+	width:344px;
+	height:150px;
+	border:1px solid #888;
+	padding:3px;
+	font-size:12px;
+}
+#pictin-drawtext-buttons
+{
+	text-align:right;
+	margin-top:10px;
+	width:350px;
+}
+#pictin-drawtext-buttons button
+{
+	margin-left:15px;
+}
+#pictin-drawtext-toolbar
+{
+	width:352px;
+	margin:0;
+}
+.pictin-drawtext-toolbar-icon
+{
+	background-image:url(../img/drawtext_iconset.png);
+	background-repeat:no-repeat;
+	width:32px;
+	height:32px;
+}
+.pictin-drawtext-toolbar-icon-bold
+{
+	background-position: 0;
+}
+.pictin-drawtext-toolbar-icon-italic
+{
+	background-position: -32px;
+}
+.pictin-drawtext-toolbar-icon-underline
+{
+	background-position: -64px;
+}
+.pictin-drawtext-toolbar-icon-fontsize
+{
+	background-position: -96px;
+}
+.pictin-drawtext-toolbar-icon-fontsize14px
+{
+	background-position: -96px;
+}
+.pictin-drawtext-toolbar-icon-fontsize18px
+{
+	background-position: -128px;
+}
+.pictin-drawtext-toolbar-icon-fontsize24px
+{
+	background-position: -160px;
+}
+.pictin-drawtext-toolbar-icon-fontsize32px
+{
+	background-position: -192px;
+}
+.pictin-drawtext-toolbar-icon-fontsize48px
+{
+	background-position: -224px;
+}
+.pictin-drawtext-toolbar-icon-fontsize72px
+{
+	background-position: -256px;
+}
+
+.pictin-drawtext-toolbar-icon-fontsize-menuicon
+{
+	display:none;
+}
+
+div#pictin-overlay, div#pictin-overlay-content{
+	/*display:none;*/
+}
+div#pictin-overlay{
+	position:fixed;
+	top:0;
+	right:0;
+	bottom:0;
+	left:0;
+	z-index:9999;
+	background-color:rgba(0, 0, 0, 0.4);
+}
+div#pictin-overlay-content, div#pictin-overlay-content>div{
+	width:300px;
+	height:50px;
+}
+div#pictin-overlay-content{
+	position:fixed;
+	top:50%;
+	right:50%;
+	z-index:10000;
+}
+div#pictin-overlay-content>div{
+	background-color:#fff;
+	background-repeat:no-repeat;
+	background-position:center top;
+	
+	position:relative;
+	top:-50%;
+	right:-50%;
+	
+	border:1px solid #666;
+	padding:15px 0;
+	
+	-moz-border-radius:6px;
+	-webkit-border-radius:6px;
+	border-radius:6px;
+}
+div#pictin-overlay-content>div>div{
+	width:100%;
+	text-align:center;
+	margin-bottom:10px;
+}
+.import-button-hover {
+	margin:-1px !important;
+}
+.import-button-hover-safari {
+	height:38px;
+	width:44px;
+	margin:-1px !important;
+}
+.import-button-hover-chrome {
+	height:36px;
+	width:38px;
+	margin:-1px !important;
+}
+image.import{
+	position:absolute;
+	background-image:url('../img/close-window.png');
+}
+.import-highlight{
+	border:1px dotted #000;
+	margin:-1px;
+}
+.import-close-icon{
+	position:absolute;
+	z-index:30;
+	top:6px;
+	right: 6px;
+	cursor:pointer;
+}
+
+/*pre and post op dialogs*/
+#tool_info{
+	/* background-color:#09C; */
+}
+#automatic_tools_selection{
+	/* background-color:#09C; */
+	line-height:17px;
+}
+
+span.AT_stepFinished{
+	color:#FFF;
+}
+span.AT_stepCurrent{
+	color:#0FC;
+}
+span.AT_stepTodo{
+	color:#333;
+}
+span.AT.resultLabel{
+	float:left;
+}
+span.AT_result{
+	float:right;
+	text-align:left;
+}
+#step_image{
+	margin-bottom: 10px;
+}
+p.image_desc{
+	font:bold;
+	font-size:13px;
+}
+img.centered{
+	display: block;
+    margin-left: auto;
+    margin-right: auto }
+}
