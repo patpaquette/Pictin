@@ -245,12 +245,24 @@ jQuery(window).load(function(){
 			shape=PICTIN.marquee[0].shape;
 			rect={left: shape.x, top: shape.y, width: shape.width, height: shape.height};
 		}
+	/*	else
+		{
+			rect = {
+				left: PICTIN.canvas.clientLeft,
+				top: PICTIN.canvas.clientTop,
+				width: PICTIN.canvas.clientWidth,
+				height: PICTIN.canvas.clientHeight
+			};
+		}*/
 		result=Pixastic.process(PICTIN.canvas, 'brightness', {
 			contrast:PICTIN.contrast_slider.value,
 			brightness:PICTIN.brightness_slider.value,
 			rect: rect
 		});
+
 		PICTIN.canvas=result;
+		//PICTIN.canvas_context.drawImage(result, 0, 0, PICTIN.canvas.clientWidth, PICTIN.canvas.clientHeith);
+
 
 		PICTIN.contrabright_dialog.dialog('close');
 		
@@ -1227,7 +1239,7 @@ PICTIN.resize_canvas=function(width, height)
 	
 	
 	//added by pat
-
+	
 	for(var i in PICTIN.contrabright_data){
 		var inverse_transform = dojox.gfx.matrix.invert({xx: PICTIN.contrabright_data[i].zoom_level});
 		var rect = PICTIN.contrabright_data[i].rect;
@@ -1249,10 +1261,12 @@ PICTIN.resize_canvas=function(width, height)
 		canvas = result;
 	}
 	
-	var current_canvas=jQuery('#background')[0];
-	current_canvas.width=width;
-	current_canvas.height=height;
-	var ctx=PICTIN.canvas_context;//current_canvas.getContext('2d');
+	//var current_canvas=jQuery('#background')[0];
+	//current_canvas.width=width;
+	//current_canvas.height=height;
+	PICTIN.canvas.width = width;
+	PICTIN.canvas.height = height;
+	var ctx=PICTIN.canvas.getContext('2d');
 	ctx.drawImage(canvas, 0, 0, width, height);
 	
 	

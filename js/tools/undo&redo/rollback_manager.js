@@ -7,123 +7,138 @@ PICTIN.rollback_manager = new function rollback_manager(){
 	this.state_list = new Array();
 	this.state_index = 0;
 	this.max_states = 20;
+	this.allow_save = true;
 	var me = this;
 	
 	jQuery(document).bind("record_state", function(e){
 		me.recordState();
-	})
+	});
+
+	this.disable = function()
+	{
+		me.allow_save = false;
+	};
+
+	this.enable = function()
+	{
+		me.allow_save = true;
+	};
 	
 	this.reinitialize = function(){
 		this.state_list = new Array();
 		this.state_index = 0;
 		this.recordState();
-	}
+	};
 	
 	this.removeLastSave = function(){
 		if(this.state_list.length > 0){
 			this.state_list.splice(this.state_list.length-1, 1);
 			if(this.state_index == this.state_list.length) this.state_index -= 1;
 		}
-	}
+	};
 	
 	this.undo = function(){
 		if(this.state_index > 0){
 			this.state_index -= 1;
 			this.rollback();
 		}
-	}
+	};
 	
 	this.redo = function(){
 		if(this.state_index < this.state_list.length-1){
 			this.state_index += 1;
 			this.rollback();
 		}
-	}
+	};
 	
 	this.recordState = function(){
-		DEBUG_PAT.output("Recording start.",true);
-		DEBUG_PAT.output("Current state : " + this.state_index + " List length : " + this.state_list.length,true);
-		if(this.state_index < this.state_list.length - 1) this.state_list.splice(this.state_index + 1, this.state_list.length - this.state_index - 1);
-		if(this.state_list.length == this.max_states) this.state_list.splice(0, 1);
-	
+		if(me.allow_save)
+		{
+			DEBUG_PAT.output("Recording start.",true);
+			DEBUG_PAT.output("Current state : " + me.state_index + " List length : " + me.state_list.length,true);
+			if(me.state_index < me.state_list.length - 1) me.state_list.splice(me.state_index + 1, me.state_list.length - me.state_index - 1);
+			if(me.state_list.length == me.max_states) me.state_list.splice(0, 1);
 		
-		
-		//experimental
-		var temp_shape_array = new Array();
-		
-		
-		jQuery.each(PICTIN.shape_manager.shape_array, function(index, value){
-			//var index = temp_shape_array.push(jQuery.extend(true, {}, value));
-			var dojo_shape = (value.isCustom)?value.shape:value;
-			var custom_class = (jQuery(value.getNode()).data("custom_shape_class") != null)?jQuery(value.getNode()).data("custom_shape_class"):"";
-			var events = jQuery(value.getNode()).data("pictin_events");
-			//var child_shapes = jQuery(value.getNode()).data("child_shapes");
-			var isSelected = false;
-			var custom_values = jQuery(value.getNode()).data("custom_values");
-			var attributes_array = {};
+			
+			
+			//experimental
+			var temp_shape_array = new Array();
+			
+			
+			jQuery.each(PICTIN.shape_manager.shape_array, function(index, value){
+				//var index = temp_shape_array.push(jQuery.extend(true, {}, value));
+				var dojo_shape = (value.isCustom)?value.shape:value;
+				var custom_class = (jQuery(value.getNode()).data("custom_shape_class") != null)?jQuery(value.getNode()).data("custom_shape_class"):"";
+				var events = jQuery(value.getNode()).data("pictin_events");
+				//var child_shapes = jQuery(value.getNode()).data("child_shapes");
+				var isSelected = false;
+				var custom_values = jQuery(value.getNode()).data("custom_values");
+				var attributes_array = {};
 
-			if(dojo_shape.getStroke)
-				attributes_array['setStroke'] = dojo_shape.getStroke();
-			if(dojo_shape.getFill)
-				attributes_array['setFill'] = dojo_shape.getFill();
-			if(dojo_shape.getFont)
-				attributes_array['setFont'] = dojo_shape.getFont();
-			if(dojo_shape.getTransform)
-				attributes_array['setTransform'] = dojo_shape.getTransform();
-			if(dojo_shape.getShape)
-				attributes_array['setShape'] = dojo_shape.getShape();
+				if(dojo_shape.getStroke)
+					attributes_array['setStroke'] = dojo_shape.getStroke();
+				if(dojo_shape.getFill)
+					attributes_array['setFill'] = dojo_shape.getFill();
+				if(dojo_shape.getFont)
+					attributes_array['setFont'] = dojo_shape.getFont();
+				if(dojo_shape.getTransform)
+					attributes_array['setTransform'] = dojo_shape.getTransform();
+				if(dojo_shape.getShape)
+					attributes_array['setShape'] = dojo_shape.getShape();
+				
+				DEBUG_PAT.output_obj(attributes_array, "attributes_array when recording state");
+				var UID = jQuery(value.getNode()).getUID();
+				var rollback_function = jQuery(value.getNode()).data("rollback_function");
+				var angle_obtuse = (value.obtuse != null)?value.obtuse:null;
+				temp_shape_array.push({	UID: UID, 
+										attr: attributes_array, 
+										custom_class: custom_class, 
+										events: events, 
+										//child_shapes: child_shapes,
+										isSelected: isSelected,
+										custom_values: custom_values,
+										rollback_function: rollback_function,
+										angle_obtuse: angle_obtuse,
+										textColor: dojo_shape.getStroke() ? dojo_shape.getStroke().color : null});
+				
+			})
+			DEBUG_PAT.output("Canvas element next line : ");
+			DEBUG_PAT.output(PICTIN.canvas);
 			
-			DEBUG_PAT.output_obj(attributes_array, "attributes_array when recording state");
-			var UID = jQuery(value.getNode()).getUID();
-			var rollback_function = jQuery(value.getNode()).data("rollback_function");
-			var angle_obtuse = (value.obtuse != null)?value.obtuse:null;
-			temp_shape_array.push({	UID: UID, 
-									attr: attributes_array, 
-									custom_class: custom_class, 
-									events: events, 
-									//child_shapes: child_shapes,
-									isSelected: isSelected,
-									custom_values: custom_values,
-									rollback_function: rollback_function,
-									angle_obtuse: angle_obtuse,
-									textColor: dojo_shape.getStroke() ? dojo_shape.getStroke().color : null});
+			//DEBUG_PAT.output_obj(temp_shape_array, "temp_shape_array", true);
+			DEBUG_PAT.output(PICTIN.surface,true);
+		
 			
-		})
-		DEBUG_PAT.output("Canvas element next line : ");
-		DEBUG_PAT.output(PICTIN.canvas);
-		
-		//DEBUG_PAT.output_obj(temp_shape_array, "temp_shape_array", true);
-		DEBUG_PAT.output(PICTIN.surface,true);
-	
-		
-		
-		
-		this.state_list.push({
-			canvas_clone: PICTIN.clone_canvas(PICTIN.canvas),
-			shape_array: temp_shape_array,
-			current_rotation: PICTIN.current_rotation,
-			current_zoom_level: PICTIN.zoom_level,
-			contrabright_data: jQuery.extend(true, {}, PICTIN.contrabright_data),
-			mirrored: PICTIN.mirrored
-		});
-		
-		this.state_index = this.state_list.length - 1;
-		
-		DEBUG_PAT.output("recording state");
-		DEBUG_PAT.output_obj(this.state_list, "state list");
-		DEBUG_PAT.output("Current state : " + this.state_index + " List length : " + this.state_list.length);
-		
-		DEBUG_PAT.output("Canvas rotation : " + PICTIN.current_rotation);
-		DEBUG_PAT.output("recording state END");
+			
+			
+			me.state_list.push({
+				canvas_clone: PICTIN.clone_canvas(PICTIN.canvas),
+				shape_array: temp_shape_array,
+				current_rotation: PICTIN.current_rotation,
+				current_zoom_level: PICTIN.zoom_level,
+				contrabright_data: jQuery.extend(true, {}, PICTIN.contrabright_data),
+				mirrored: PICTIN.mirrored
+			});
+			
+			me.state_index = me.state_list.length - 1;
+			
+			DEBUG_PAT.output("recording state");
+			DEBUG_PAT.output_obj(me.state_list, "state list");
+			DEBUG_PAT.output("Current state : " + me.state_index + " List length : " + me.state_list.length);
+			
+			DEBUG_PAT.output("Canvas rotation : " + PICTIN.current_rotation);
+			DEBUG_PAT.output("recording state END");
+		}
 	}
 	
 	this.rollback = function(){
+		me.disable();
 		DEBUG_PAT.output("ROLLING BACK NOW");
 		DEBUG_PAT.output("current rotation in rollback: " + this.state_list[this.state_index].current_rotation);
 		
 		var bgcanvas = jQuery('#background')[0];
 		var context = bgcanvas.getContext('2d');
-		var surface = (PICTIN.surface_buffer != null)?PICTIN.surface_buffer:PICTIN.surface;
+		var surface = (PICTIN.surface_buffer !== null)?PICTIN.surface_buffer:PICTIN.surface;
 		var rotation_deg = this.state_list[this.state_index].current_rotation - PICTIN.current_rotation;
 		DEBUG_PAT.output("rotation_deg : " + rotation_deg);
 		PICTIN.current_rotation = this.state_list[this.state_index].current_rotation;
@@ -139,28 +154,28 @@ PICTIN.rollback_manager = new function rollback_manager(){
 		DEBUG_PAT.output_obj(this.state_list, "state list");
 		
 		
-		//experimental	
+		//experimental
 		var temp_attr_array = this.state_list[this.state_index].shape_array;
 		PICTIN.surface.clear();
-		PICTIN.shape_manager.shape_array = new Array();
+		PICTIN.shape_manager.shape_array = [];
 		copy_shape_array_attributes(PICTIN.shape_manager.shape_array, temp_attr_array);
 		
 		//rollback functions
 		for(var i in PICTIN.shape_manager.shape_array){
 			var rollback_function = jQuery(PICTIN.shape_manager.shape_array[i].getNode()).data("rollback_function");
 			
-			if(rollback_function!= null){
+			if(rollback_function!== null){
 				DEBUG_PAT.output("rollback_function isn't null", true);
 				rollback_function(PICTIN.shape_manager.shape_array[i]);
 			}
 		}
 		//PICTIN.shape_manager.refresh_anchor_position();
-		if (dijit.byId("select").attr("checked") == true) {
-		 	PICTIN.shape_manager.make_selectable();
-		 }
-		 
-	}
-}
+		if (dijit.byId("select").attr("checked") === true) {
+			PICTIN.shape_manager.make_selectable();
+		}
+		me.enable();
+	};
+}();
 
 
 //DOJOX GFX utility functions

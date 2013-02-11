@@ -26,6 +26,7 @@ CALIBRATION.getMeasurement = function(segmentLength){
 		if (this.activated == false) {
 			this.activated = true;
 			select_circle_area_dialog();
+			PICTIN.rollback_manager.disable();
 		}
 		
 		return this;
@@ -34,6 +35,7 @@ CALIBRATION.getMeasurement = function(segmentLength){
 	this.stop = function(){
 		PICTIN.marquee = null;
 		this.activated = false;
+		PICTIN.rollback_manager.enable();
 		jQuery(document).unbind(".calibration");
 	} 	
 	
@@ -65,23 +67,22 @@ CALIBRATION.getMeasurement = function(segmentLength){
 		autoOpen: false,
 		buttons: {
 			"Ok": function(){
-				  	select_circle_area();
-				  	return false;
-				  }
+					select_circle_area();
+					return false;
+				}
 		},
 		close: function(){
-			jQuery("select-area-dialog").hide()
+			jQuery("select-area-dialog").hide();
 		},
 		zIndex:10
-	})
+	});
 	
 	jQuery("#area-select-dialog").show();
 	dialog.dialog("open");
  }
  
  function select_circle_area(){
- 	jQuery("#select-area-dialog").dialog("close");
-	
+ 	jQuery("#select-area-dialog").dialog("close");	
 	var redraw_circle = function(e){
 		e.stopPropagation();
 		//DEBUG_PAT.output("in redraw_circle");
@@ -101,6 +102,8 @@ CALIBRATION.getMeasurement = function(segmentLength){
 	PICTIN.color_buffer = PICTIN.current_color;
 	PICTIN.current_color = "FF0000";
 	CALIBRATION.calibrator_drawn = false;
+	
+
 	if (jQuery("#calibration_style").val() == "circle") {
 		jQuery(document).bind("circle_drawn.calibrator", function(e, shape){
 			PICTIN.current_color = PICTIN.color_buffer;
@@ -110,7 +113,7 @@ CALIBRATION.getMeasurement = function(segmentLength){
 			CALIBRATION.calibrator = shape;
 			CALIBRATION.calibrator_drawn = true;
 			CALIBRATION.calibrator_length = shape.getShape().r * 2;
-			//PICTIN.rollback_manager.removeLastSave();
+			//PICTIN.rollback_manager.removeLastSave()
 			jQuery(document).unbind("circle_drawn.calibrator");
 		})
 		
@@ -212,201 +215,15 @@ CALIBRATION.create_scale = function(length){
 		var deltaLeft = jQuery(window).scrollLeft() - CALIBRATION.scrollLeft_buffer;
 		CALIBRATION.scrollTop_buffer = jQuery(window).scrollTop();
 		CALIBRATION.scrollLeft_buffer = jQuery(window).scrollLeft();
+		CALIBRATION.scale.setTransform({dx: 0, dy: 0});
 		CALIBRATION.scale.applyLeftTransform({dx: deltaLeft, dy: deltaTop});
-	
+
+		
 	}
  }
 
  
- /*function activate_marquee(){
- 	jQuery(document).mousemove(function(e){
-		
-		if(e.target.parentNode.id!='surface' && e.target.id!='surface') return;
-																																			  
-		e.preventDefault();
-		//
-		if(PICTIN.mousedown && PICTIN.surface)
-		{
-			//remove 
-			if(PICTIN.marquee)
-			{
-				PICTIN.surface.remove(PICTIN.marquee[0]);
-				PICTIN.surface.remove(PICTIN.marquee[1]);
-			}
-							
-			
-			var coords=PICTIN.get_cursor_coords('surface', e),
-				mousedownx=PICTIN.mousedownx,
-				mousedowny=PICTIN.mousedowny;
-				
-			//handle overflow
-			var canvas_dimensions=PICTIN.surface.getDimensions();
-			if(coords.x>canvas_dimensions.width-1)
-				coords.x=canvas_dimensions.width-1;
-			if(coords.x<0)
-				coords.x=0;			
-			if(coords.y>canvas_dimensions.height-1)
-				coords.y=canvas_dimensions.height-1;
-			if(coords.y<0)
-				coords.y=0;	
-			if(mousedownx>canvas_dimensions.width-1)
-				mousedownx=canvas_dimensions.width-1;
-			if(mousedownx<0)
-				mousedownx=0;			
-			if(mousedowny>canvas_dimensions.height-1)
-				mousedowny=canvas_dimensions.height-1;
-			if(mousedowny<0)
-				mousedowny=0;	
-				
-			var width=coords.x-mousedownx,
-				height=coords.y-mousedowny,
-				topleftx=mousedownx,
-				toplefty=mousedowny;
-			
-			//handle negatives
-			if(width<0)
-			{
-				width*=-1;
-				topleftx=coords.x;
-			}			
-			if(height<0) 
-			{
-				height*=-1;
-				toplefty=coords.y;
-			}
-			
-			//apply transformation to coords and dimensions
-			//topleftx/=PICTIN.zoom_level;
-			//toplefty/=PICTIN.zoom_level;
-			//width/=PICTIN.zoom_level;
-			//height/=PICTIN.zoom_level;
-			
-			//var coords=PICTIN.get_cursor_coords('surface', e);
-			//PICTIN.debug("x: "+topleftx+"\ny: "+toplefty+"\nwidth: "+width+"\nheight: "+height);
-										
-			//create rectangle
-			var shape1=PICTIN.surface
-				.createRect({id: 'marquee', x: topleftx, y: toplefty, width: width, height: height, 'shape-rendering': 'crispEdges'})
-				.setStroke({color:'#ffffff', width: 1});
-			var shape2=PICTIN.surface
-				.createRect({id: 'marquee', x: topleftx, y: toplefty, width: width, height: height, 'shape-rendering': 'crispEdges'})
-				.setStroke({color:'#000000', width: 1, style: 'Dash'});
-				
-			//shape1.applyTransform({xx:PICTIN.zoom_level, yy: PICTIN.zoom_level});
-			//shape2.applyTransform({xx:PICTIN.zoom_level, yy: PICTIN.zoom_level});
-
-			PICTIN.marquee=[shape1, shape2];
-
-		}
-	});
-	
-	jQuery(document).mouseup(calibrate_mouseupHandler);
- }*/
  
- /*function open_zoomed_area_dialog(){
- 	var precanvas_width = 550;
-	var precanvas_height = 550;
- 	var bgcanvas=PICTIN.canvas,
-		bgcontext=bgcanvas.getContext('2d'),
-		bgaspectratio=bgcanvas.width/bgcanvas.height,
-		precanvas=jQuery('#zoomed-area-canvas')[0],
-		prectx=precanvas.getContext('2d');
-	
-	var scaling_factor = null;
-	
-	precanvas.width = precanvas_width;
-	precanvas.height = precanvas_height;
-	//clear preview canvas
-	prectx.clearRect(0, 0, precanvas.width, precanvas.height);
-	prectx.mozImageSmoothingEnabled=true;
-	
-	if(PICTIN.marquee)
-	{
-		//PICTIN.debug("marquee.x: "+PICTIN.marquee.x+", marquee.y: "+PICTIN.marquee.y);
-		
-		
-		bgcanvas=PICTIN.marquee[0].shape;
-		//console.log("bgcanvas height : " + bgcanvas.height);
-		bgaspectratio=bgcanvas.width/bgcanvas.height;
-		var data=bgcontext.getImageData(bgcanvas.x, bgcanvas.y, bgcanvas.width, bgcanvas.height),
-			canvas=jQuery('<canvas></canvas>').attr('height', bgcanvas.height).attr('width', bgcanvas.width)[0];
-		canvas.getContext('2d').putImageData(data, 0, 0);
-				
-		
-		if(bgaspectratio>1)
-		{
-			var height=precanvas.height/bgaspectratio,
-				toplefty=(precanvas.height-height)/2;
-			
-			scaling_factor = PICTIN.marquee[0].shape.width/precanvas_width;
-			precanvas.height = height;
-			prectx.drawImage(canvas, 0, 0, precanvas.width, height);
-			
-			jQuery('#zoomed-area-surface')
-				.html('')
-				.css('height', height+'px')
-				.css('width', precanvas.width+'px');
-			
-			PICTIN.surface_buffer = PICTIN.surface;
-			PICTIN.surface = dojox.gfx.createSurface(jQuery("#zoomed-area-surface")[0], precanvas.width, height);
-			PICTIN.surface_id = "zoomed-area-surface";
-			
-			var dialog = jQuery("#zoomed-area-dialog").dialog({
-				resizable: false,
-				title: 'Circle area',
-				width: precanvas.width + 30,
-				height: height + 135,
-				autoOpen: false,
-				buttons: {"Ok": function(){
-						jQuery(this).dialog("close");
-						transfer_calibrator(scaling_factor);
-					}
-				},
-				close: unexpected_leave,
-				zIndex:10
-			})
-		}
-		else
-		{
-			var width=precanvas.width*bgaspectratio,
-				topleftx=(precanvas.width-width)/2;
-				
-			scaling_factor = PICTIN.marquee[0].shape.height/precanvas_height;
-			precanvas.width = width;
-			prectx.drawImage(canvas, 0, 0, width, precanvas.height);
-			
-			jQuery('#zoomed-area-surface')
-				.html('')
-				.css('height', precanvas.height+'px')
-				.css('width', width+'px');
-			
-			PICTIN.surface_buffer = PICTIN.surface;
-			PICTIN.surface = dojox.gfx.createSurface(jQuery("#zoomed-area-surface")[0], width, precanvas.height);
-			PICTIN.surface_id = "zoomed-area-surface";
-			
-			
-			var dialog = jQuery("#zoomed-area-dialog").dialog({
-				resizable: false,
-				title: 'Circle area',
-				width: width + 30,
-				height: precanvas.height + 135,
-				autoOpen: false,
-				buttons: {"Ok": function(){
-						jQuery(this).dialog("close");
-						transfer_calibrator(scaling_factor);
-					}
-				},
-				close: unexpected_leave,
-				zIndex:10
-			})
-		}
-	}
-	dialog.dialog("open");
-	
-	remove_events();
-	open_calibration_dialog();
-	//create_calibration_circle();
- }*/
  
  function transfer_calibrator(args){
  	PICTIN.surface = PICTIN.surface_buffer;
@@ -460,29 +277,12 @@ CALIBRATION.create_scale = function(length){
  }
  
  function trigger_calibrationDone(){
+ 	PICTIN.rollback_manager.enable();
+ 	PICTIN.rollback_manager.recordState();
+ 	PICTIN.rollback_manager.disable();
  	jQuery(document).trigger("CALIBRATION_DONE");
  }
- /*//event handlers
- var calibrate_mouseupHandler = function(e){
- 	if (PICTIN.marquee != null) {
-		var x = PICTIN.marquee[0].getShape().x;
-		var y = PICTIN.marquee[0].getShape().y;
-		var width = PICTIN.marquee[0].getShape().width;
-		var height = PICTIN.marquee[0].getShape().height;
-		var surface_dimensions = PICTIN.surface.getDimensions();
-		
-		//var zoom_level = (width < height)?surface_dimensions.height/height:surface_dimensions.width/width;
-		
-		//PICTIN.set_zoom_level(zoom_level);
-		
-		//jQuery(document).scrollLeft(x*zoom_level);
-		//jQuery(document).scrollTop(jQuery("#toolbar").height() + y*zoom_level);
-		
-		jQuery(document).unbind("mousemove");
-		
-		open_zoomed_area_dialog();
-	}
-}*/
+ 
  
 function open_calibration_dialog(){
 	
@@ -503,7 +303,7 @@ function open_calibration_dialog(){
 		},
 		zIndex:10
 	});
-	
+
 	dialog.dialog("open");
 }
 
